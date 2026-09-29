@@ -16,5 +16,8 @@ COPY static ./static
 # FastAPI port
 EXPOSE 8000
 
+TRAINING_URI http://100.59.112.41:5000
+
 # Start FastAPI
 CMD ["uvicorn", "serve:app", "--host", "0.0.0.0", "--port", "8000"]
+

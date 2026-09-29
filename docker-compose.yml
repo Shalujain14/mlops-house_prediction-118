@@ -1,12 +1,12 @@
 services:
 
   backend:
-    image: shalu1400/house-price-prediction:latest
+    image: shalu1400/mlops118-house-price-prediction:latest
     container_name: house-price-prediction
     ports:
       - "8000:8000"
 
     environment:
-      MLFLOW_TRACKING: http://YOUR_MLFLOW_SERVER:5000
+      MLFLOW_TRACKING: http://100.59.112.41:5000
 
     restart: unless-stopped
