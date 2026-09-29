@@ -40,4 +40,4 @@ jobs:
             echo "docker stop"
             echo "docker rm"
             echo "docker run"
-            echo "Public ip : 56.7.7.7:8000"
+            echo "Public ip:56.7.7.7:8000"
