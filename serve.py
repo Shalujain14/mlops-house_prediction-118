@@ -21,12 +21,12 @@ model=mlflow.sklearn.load_model(MODEL_URI)
 app= FastAPI(title="House Price Predictor")
 
 class HouseFeatures(BaseModel):
-    sqft: float = Field(..., gt=0 , le=20000)
-    bedrooms: int = Field(...,gt=0,le=20)
-    bathrooms: int = Field(...,gt=0,le=200)
-    age_years: int = Field(...,gt=0 , le=10)
-    location_score: int = Field(...,ge=1 , le=10)
-    
+    sqft: float = Field(..., gt=0, le=20000)
+    bedrooms: int = Field(..., gt=0, le=20)
+    bathrooms: int = Field(..., gt=0, le=200)
+    age_years: int = Field(..., gt=0, le=10)
+    garage: int = Field(..., ge=0, le=10)
+    location_score: int = Field(..., ge=1, le=10)
 
 @app.get("/health")
 def health():
