@@ -3,7 +3,7 @@ import boto3
 from datetime import date
 
 # load raw csv from local resource
-path=r"C:\Users\HP\Downloads\Mlops_house_predication_clean_v1.csv"
+path=r"C:\Users\HP\Downloads\Mlops_house_prediction_clean_v1.csv"
 data=pd.read_csv(path)
 df=pd.DataFrame(data)
 print("==============Before cleaning=================")
@@ -16,7 +16,7 @@ print(df_clean.isnull().sum())
 print(f"Shape After : {df_clean.shape}")
 
 # save clean csv locally
-clean_path=r"C:\Users\HP\Downloads\Mlops_house_predication_clean_v2.csv"
+clean_path=r"C:\Users\HP\Downloads\Mlops_house_prediction_clean_v2.csv"
 df_clean.to_csv(clean_path,index=False)
 
 
