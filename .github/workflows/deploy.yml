@@ -1,3 +1,4 @@
+
 name: Deploy Pipeline
 
 on:
@@ -7,6 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  # ============================================================
+  # BUILD AND PUSH DOCKER IMAGE
+  # ============================================================
 
   build:
     runs-on: ubuntu-latest
@@ -49,13 +54,17 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/house-price-prediction:latest
 
 
+  # ============================================================
+  # DEPLOY TO EC2
+  # ============================================================
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
 
-      # 6. SSH into EC2 and deploy
+      # 6. SSH into EC2
       - name: SSH into EC2 and redeploy
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -65,26 +74,78 @@ jobs:
 
           script: |
 
-            # Pull latest Docker image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/house-price-prediction:latest
+            echo "======================================"
+            echo "Starting deployment..."
+            echo "======================================"
 
+            # -----------------------------------------------
+            # Pull latest image
+            # -----------------------------------------------
+
+            docker pull \
+              ${{ secrets.DOCKERHUB_USERNAME }}/house-price-prediction:latest
+
+
+            # -----------------------------------------------
             # Stop existing container
+            # -----------------------------------------------
+
             docker stop house-price-prediction || true
 
+
+            # -----------------------------------------------
             # Remove existing container
+            # -----------------------------------------------
+
             docker rm house-price-prediction || true
 
+
+            # -----------------------------------------------
             # Run new container
+            # -----------------------------------------------
+
             docker run -d \
               --name house-price-prediction \
               -p 8000:8000 \
+              --add-host=host.docker.internal:host-gateway \
+              -e MLFLOW_TRACKING=http://host.docker.internal:5000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/house-price-prediction:latest
 
-            # Check container
+
+            # -----------------------------------------------
+            # Wait for application
+            # -----------------------------------------------
+
+            sleep 5
+
+
+            # -----------------------------------------------
+            # Show container
+            # -----------------------------------------------
+
             docker ps
 
-            # Deployment message
+
+            # -----------------------------------------------
+            # Show application logs
+            # -----------------------------------------------
+
+            docker logs --tail 50 house-price-prediction
+
+
+            # -----------------------------------------------
+            # Health check
+            # -----------------------------------------------
+
+            curl -f http://localhost:8000/health
+
+
+            # -----------------------------------------------
+            # Deployment successful
+            # -----------------------------------------------
+
             echo "======================================"
             echo "Deployment successful!"
             echo "Application: http://${{ secrets.EC2_HOST }}:8000"
             echo "======================================"
+
